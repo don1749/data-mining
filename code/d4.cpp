@@ -8,42 +8,64 @@ using namespace std;
 
 #define D_SIZE 200
 
-typedef vector<vector<double>> PointGroup;
+typedef vector<vector<double> > PointGroup;
 
-void FindKCenterPts(int k, PointGroup &d, PointGroup &cP) {
+void initKCenterPts(PointGroup &data, PointGroup &centerPoints, int k) {
 	//pick random k center points from d[] and label them
 	srand(time(NULL));
 	for(int i=0; i<k; ++i) {
 		int randIdx = rand()%D_SIZE;
-		cP[i][0] = d[randIdx][0];
-		cP[i][1] = d[randIdx][1];
-		cP[i][2] = i;
+		centerPoints[i][0] = data[randIdx][0];
+		centerPoints[i][1] = data[randIdx][1];
+		// cout << centerPoints[i][0] << "," << centerPoints[i][1] << endl;
 	}
 }
 
-// void findLabel(int k, double centerPts[][], double d[][], int x, int y) {
+void setLabel(PointGroup &data, PointGroup &centerPts, vector<int> &label) {
+	int k = centerPts.size();
+	int dSize = data.size();
 
-// }
+	for(int i=0; i<dSize; ++i) {
+		double x,y;
+		x = data[i][0];
+		y = data[i][1];
+		double minDistSqr = double(1e7);
+		
+		for(int j=0; j<k; ++j) {
+			double distSqr = (x-centerPts[j][0])*(x-centerPts[j][0]) + (y-centerPts[j][1])*(y-centerPts[j][1]);
+			if(distSqr-minDistSqr<0) {
+				minDistSqr = distSqr;
+				label[i] = j;
+			}
+		}
+	}
+}
 
-// void findCenter(int k, int l[], double **d, double **centerPts) {
-// 	double res[2];
-// 	res[0] = 0.0;
-// 	res[1] = 0.0;
-// 	int cnt = 0;
+void updateCenter(PointGroup &data, PointGroup &centerPts, vector<int> &label) {
+	int k = centerPts.size();
+	int dSize = data.size();
 
-// 	for(int i=0; i<k; i++) {
-// 		if(l[i]==k) {
-// 			cnt ++;
-// 			res[0] += d[i][0];
-// 			res[1] += d[i][1];
-// 		}
-// 	}
-// 	res[0] /= cnt;
-// 	res[1] /= cnt;
-	
-// 	centerPts[k][0] = res[0];
-// 	centerPts[k][1] = res[1];
-// }
+	for(int i=0; i<k; ++i) {
+		double xSum, ySum;
+		int cnt = 0;
+		xSum = 0.0;
+		ySum = 0.0;
+
+		for(int j=0; j<dSize; ++j) {
+			if(label[j] == i) {
+				xSum += data[j][0];
+				ySum += data[j][1];
+				cnt++;
+			}
+		}
+
+		centerPts[i][0] = xSum/cnt;
+		centerPts[i][1] = ySum/cnt;
+
+		cout << centerPts[i][0] << "," << centerPts[i][1] << endl;
+	}
+	cout << endl;
+}
 
 int main(int argc, char *argv[])
 {
@@ -52,10 +74,12 @@ int main(int argc, char *argv[])
 	int k;
 	k=atoi(argv[3]);
 	int count = 0;
-	PointGroup data(D_SIZE, vector<double>(2,0));// the number of data is 200
-	PointGroup centerPts(k, vector<double>(3,0));
-	int label[D_SIZE];
-	int i=0;
+
+	PointGroup data(D_SIZE, vector<double>(2,0)); // the number of data is 200
+	PointGroup centerPts(k, vector<double>(2,0)); 
+	vector<int> label(D_SIZE);
+	// flag
+	vector<int> curLabel(D_SIZE, k+1); 
 
 	//Input//
 	fp_in = fopen(argv[1],"r");
@@ -70,21 +94,13 @@ int main(int argc, char *argv[])
 	}
 	
 	//k-means//
-	//Init label array
-	for (int i=0; i<D_SIZE; i++) {
-		label[i] = k+1;
-	}
+	initKCenterPts(data, centerPts, k);
 
-	FindKCenterPts(k, data, centerPts);
-	for (int i=0; i<D_SIZE; i++) {
-		for (int j=0; j<k; j++) {
-			if (data[i][0] == centerPts[j][0] && data[i][1] == centerPts[j][1]) {
-				label[i] = centerPts[j][2];
-				break;
-			}
-		}
+	while(!(label == curLabel)) {
+		label = curLabel;
+		setLabel(data, centerPts, curLabel);
+		updateCenter(data, centerPts, curLabel);
 	}
-	
 	///////////
 	
 	//Output//
@@ -94,13 +110,8 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-
-	for(i=0;i<200;i++){
+	for(int i=0;i<200;i++){
 		fprintf(fp_out, "%lf,%lf,%d\n", data[i][0], data[i][1], label[i]);
-	}
-
-	for (int i=0; i<k; i++) {
-		cout << centerPts[i][0] << centerPts[i][1] << ' ' << centerPts[i][2] << endl;
 	}
 
 	return 0;

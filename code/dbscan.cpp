@@ -8,7 +8,6 @@
 #include <cmath>
 using namespace std;
 
-
 #define D_SIZE 200
 
 typedef vector<vector<double> > PointGroup;
@@ -20,9 +19,9 @@ double dist(PointGroup &data, int i, int j) {
 }
 
 vector<int> regionQuery(PointGroup &data, int i, double eps) {
-  vector<int> neighbors;
+  vector<int> neighbors={i};
   for(int j = 0; j < data.size(); ++j) {
-    if(dist(data, i, j) <= eps) neighbors.push_back(j);
+    if(dist(data, i, j) <= eps && j != i) neighbors.push_back(j);
   }
 
   return neighbors;
@@ -61,27 +60,19 @@ void dbscan(PointGroup &data, Neighbors &neighbors, vector<int> &label, vector<b
 
 int main(int argc, char *argv[])
 {
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+
 	FILE *fp_in, *fp_out;
 	int input;
-  // cout << argc << endl;
-  if (argc < 5) return -1;
-	double eps;
-  eps = atof(argv[3]);
-  // cout << eps << endl;
-  int minPts;
-  minPts = atoi(argv[4]);
-  // cout << minPts << endl;
+  double eps = 1.5;
+  int minPts = 4;
 	int count = 0;
 
-  cout << 1;
 	PointGroup data(D_SIZE, vector<double>(2,0)); // the number of data is 200
-  cout << 1;
   Neighbors neighbors(D_SIZE);
-  cout << 1;
 	vector<int> label(D_SIZE,-1);
-  cout << 1;
   vector<bool> visited(D_SIZE, false);
-  cout << 1;
 
 	//Input//
 	fp_in = fopen(argv[1],"r");

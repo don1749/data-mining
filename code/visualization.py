@@ -28,7 +28,10 @@ def visualization(file_name, prefix):
     plt.close()
 
 input_files = ["crater.csv", "moon.csv", "square.csv", "three_island.csv", "two_island.csv"]
+
 output_files = ["cpp_out_crater_kmeans.csv", "cpp_out_moon_kmeans.csv", "cpp_out_square_kmeans.csv", "cpp_out_three_island_kmeans.csv", "cpp_out_two_island_kmeans.csv"]
 
-for file in output_files:
+dbscan_output_files = ["cpp_out_crater_dbscan.csv", "cpp_out_moon_dbscan.csv", "cpp_out_square_dbscan.csv", "cpp_out_three_island_dbscan.csv", "cpp_out_two_island_dbscan.csv"]
+
+for file in dbscan_output_files:
     visualization(file, "")

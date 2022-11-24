@@ -37,13 +37,14 @@ def lof(file_name, k=4):
       if(len(row)==3):
           label.append(int(row[2]))
 
-  lof = LocalOutlierFactor(n_neighbors=k).fit_predict(data)
-  print(lof)
-
+  LOF = LocalOutlierFactor(n_neighbors=k)
+  LOF.fit_predict(data)
+  lofVal = -LOF.negative_outlier_factor_
+  
   with open('py_out_' + file_name[:-4] + '_lof.csv', 'w') as csvfile:
     writer = csv.writer(csvfile)
     for i in range(len(data)):
-        line = data[i] + [lof[i]]
+        line = data[i] + [lofVal[i]]
         writer.writerow(line)
 
 for file in input_files:

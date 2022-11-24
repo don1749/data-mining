@@ -66,8 +66,9 @@ int main(int argc, char *argv[])
 
 	FILE *fp_in, *fp_out;
 	int input;
-  double eps = 1.5;
-  int minPts = 4;
+  double eps = argc==5 ? atof(argv[3]) : 1.5;
+  int minPts = argc==5 ? atoi(argv[4]) : 4; 
+  cout << eps << " " << minPts <<endl;
 	int count = 0;
 
 	PointGroup data(D_SIZE, vector<double>(2,0)); // the number of data is 200

@@ -33,5 +33,6 @@ output_files = ["cpp_out_crater_kmeans.csv", "cpp_out_moon_kmeans.csv", "cpp_out
 
 dbscan_output_files = ["cpp_out_crater_dbscan.csv", "cpp_out_moon_dbscan.csv", "cpp_out_square_dbscan.csv", "cpp_out_three_island_dbscan.csv", "cpp_out_two_island_dbscan.csv"]
 
-for file in dbscan_output_files:
-    visualization(file, "")
+# for file in dbscan_output_files:
+#     visualization(file, "")
+visualization(dbscan_output_files[0], "")

@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 	FILE *fp_in, *fp_out;
 	int input;
 	int k;
-	k=atoi(argv[3]) ? atoi(argv[3]) : 3;
+	k= argc==4 ? atoi(argv[3]) : 3;
 	int count = 0;
 
 	PointGroup data(D_SIZE, vector<double>(2,0)); // the number of data is 200

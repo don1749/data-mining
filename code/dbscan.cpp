@@ -19,9 +19,9 @@ double dist(PointGroup &data, int i, int j) {
 }
 
 vector<int> regionQuery(PointGroup &data, int i, double eps) {
-  vector<int> neighbors={i};
+  vector<int> neighbors;
   for(int j = 0; j < data.size(); ++j) {
-    if(dist(data, i, j) <= eps && j != i) neighbors.push_back(j);
+    if(dist(data, i, j) <= eps) neighbors.push_back(j);
   }
 
   return neighbors;
@@ -30,27 +30,28 @@ vector<int> regionQuery(PointGroup &data, int i, double eps) {
 void expandCluster(PointGroup &data, int i, Neighbors &neighbors, vector<int> &label, vector<bool> &visited, int C, double eps, int minPts) {
   label[i] = C;
   for(int j=0; j < neighbors[i].size(); ++j) {
-    if(!visited[j]) {
-      visited[j] = true;
-      vector<int> newNeighbors = regionQuery(data, j, eps);
+    int q = neighbors[i][j];
+    if(!visited[q]) {
+      visited[q] = true;
+      vector<int> newNeighbors = regionQuery(data, q, eps);
 
       if(newNeighbors.size() >= minPts)
         neighbors[i].insert(neighbors[i].end(), newNeighbors.begin(), newNeighbors.end());
     }
 
-    if(label[j] == -1) label[j] = C;
+    if(label[q] == -1) label[q] = C;
   }
 }
 
-void dbscan(PointGroup &data, Neighbors &neighbors, vector<int> &label, vector<bool> &visited, double eps, int minPts) {
-  int C = 1;
+void DBSCAN(PointGroup &data, Neighbors &neighbors, vector<int> &label, vector<bool> &visited, double eps, int minPts) {
+  int C = 0; // cluster count
   for(int i = 0; i < data.size(); ++i) {
     if(visited[i]) continue;
     
     visited[i] = true;
     neighbors[i] = regionQuery(data, i, eps);
 
-    if (neighbors[i].size() < minPts) label[i] = 0;
+    if (neighbors[i].size() < minPts) label[i] = 0; //noise
     else {
       C++;
       expandCluster(data, i, neighbors, label, visited, C, eps, minPts);
@@ -86,8 +87,8 @@ int main(int argc, char *argv[])
 		count++;
 	}
 	
-	//dbscan//
-  dbscan(data, neighbors, label, visited, eps, minPts);
+	//DBSCAN//
+  DBSCAN(data, neighbors, label, visited, eps, minPts);
 	///////////
 	
 	//Output//
